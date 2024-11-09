@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Og'ir G'ildirak Inertsiya Hisobi</title>
+    <style>
+        /* Stil */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .calculator {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 20px;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .calculate-button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .result {
+            font-size: 16px;
+            color: #333;
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .result.visible {
+            opacity: 1;
+        }
+        
+        /* G'ildirak va yuk uchun animatsiya */
+        .animation-container {
+            position: relative;
+            width: 100px;
+            height: 200px;
+            margin-top: 20px;
+        }
+        .wheel {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            background-color: #333;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+        .weight {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #007bff;
+            border-radius: 50%;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            animation-fill-mode: forwards;
+        }
+        
+        /* Yukning pastga tushish va qaytish animatsiyasi */
+        @keyframes fall {
+            0% { top: 0; }
+            70% { top: 140px; } /* Pastga tushadi */
+            100% { top: 0; }    /* Qaytib yuqoriga ko'tariladi */
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <h1>Og'ir G'ildirak Inertsiya Hisobi</h1>
+    <div class="input-group">
+        <label for="mass">Yuk massasi (kg):</label>
+        <input type="number" id="mass" step="0.01">
+    </div>
+    <div class="input-group">
+        <label for="h1">Boshlang'ich balandlik h1 (m):</label>
+        <input type="number" id="h1" step="0.01">
+    </div>
+    <div class="input-group">
+        <label for="h2">Oxirgi balandlik h2 (m):</label>
+        <input type="number" id="h2" step="0.01">
+    </div>
+    <div class="input-group">
+        <label for="time">Tushish vaqti t (s):</label>
+        <input type="number" id="time" step="0.01">
+    </div>
+    <div class="input-group">
+        <label for="radius">Radius r (m):</label>
+        <input type="number" id="radius" step="0.01">
+    </div>
+    <button class="calculate-button" onclick="calculateInertia()">Hisoblash</button>
+    <div id="outputFriction" class="result">Ishqalanish kuchi: </div>
+    <div id="outputInertia" class="result">Inertsiya momenti: </div>
+</div>
+
+<div class="animation-container">
+    <div class="wheel"></div>
+    <div id="fallingWeight" class="weight"></div>
+</div>
+
+<script>
+    function calculateInertia() {
+        // Kiruvchi qiymatlarni olish
+        let m = parseFloat(document.getElementById("mass").value);
+        let h1 = parseFloat(document.getElementById("h1").value);
+        let h2 = parseFloat(document.getElementById("h2").value);
+        let t = parseFloat(document.getElementById("time").value);
+        let r = parseFloat(document.getElementById("radius").value);
+
+        // Tezlik va burchak tezligini hisoblash
+        let g = 9.81;
+        let v = 2 * h1 / t;
+        let omega = v / r;
+        let f = (m * g * (h1 - h2)) / (h1 + h2);
+        let I = (m * g * (h1 - h2)) / (omega * omega) - f;
+
+        // Natija maydonlarini yangilash
+        let outputFriction = document.getElementById("outputFriction");
+        let outputInertia = document.getElementById("outputInertia");
+        
+        outputFriction.textContent = "Ishqalanish kuchi: " + f.toFixed(2) + " N";
+        outputInertia.textContent = "Inertsiya momenti: " + I.toFixed(2) + " kg.m²";
+        
+        outputFriction.classList.add("visible");
+        outputInertia.classList.add("visible");
+
+        // Yuk animatsiyasini yangilash
+        let weight = document.getElementById("fallingWeight");
+        weight.style.animation = "none"; // Animatsiyani to'xtatish
+
+        // Kichik bir kechikishdan so'ng animatsiyani qayta boshlash
+        setTimeout(() => {
+            weight.style.animation = `fall ${t}s ease-in-out`;
+        }, 50);
+    }
+</script>
+
+</body>
+</html>
